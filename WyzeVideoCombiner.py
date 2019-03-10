@@ -35,23 +35,20 @@ def main(argv):
         print "Input Directory does not exist."
         sys.exit(2)
 
-    if not os.path.exists(output_directory):
-        print "Output Directory does not exist."
-        sys.exit(2)
-
     paths = glob.glob(input_directory + os.path.sep + "*/")
     for path in paths:
         process_hour_directory(path, del_source)
 
     if output_directory != "":
         if not os.path.exists(output_directory):
-            print "Output Directory does not exist."
-        else:
-            for video_file in glob.glob(input_directory + os.path.sep + "*.mp4"):
-                file_name = os.path.basename(video_file)
-                new_home = os.path.join(output_directory, file_name)
-                print("Moving file " + video_file + " to new home " + new_home)
-                shutil.move(video_file, new_home)
+            print "Output Directory does not exist. Creating directory " + output_directory
+            os.mkdir(output_directory)
+
+        for video_file in glob.glob(input_directory + os.path.sep + "*.mp4"):
+            file_name = os.path.basename(video_file)
+            new_home = os.path.join(output_directory, file_name)
+            print("Moving file " + video_file + " to new home " + new_home)
+            shutil.move(video_file, new_home)
 
 
 def process_hour_directory(input_directory, del_source):
@@ -84,7 +81,6 @@ def generate_file_list(file_directory):
 
 def run_ffmpeg(file_directory, output_name):
     print("Running ffmpeg in hour directory " + file_directory)
-    #ffmpeg -f concat -i ..\files.txt -c copy Hour_7.mp4
     print subprocess.Popen("ffmpeg -y -f concat -i files.txt -c copy ..\\" + output_name + ".mp4", shell=True,
                            stdout=subprocess.PIPE, cwd=file_directory).stdout.read()
 
